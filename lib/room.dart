@@ -11,16 +11,11 @@ class Room extends StatefulWidget {
 }
 
 class _Room extends State {
-  /// Whether the user list is expanded or not.
-  bool _expanded = false;
-
-  /// Message text the user enters to be posted to the room.
-  late String _postMessage;
-
-  /// Controller for the message list ListView.
+  bool _expanded = false; //Se a lista de usuários está expandida
+  late String _postMessage; //Mensagem a ser postada
+  //Controller para a listagem de mensagens
   final ScrollController _controller = ScrollController();
-
-  /// Controller for post TextFields
+  //Controller para caixa de msg
   final TextEditingController _postEditingController = TextEditingController();
 
   @override
@@ -30,28 +25,24 @@ class _Room extends State {
     return Consumer<FlutterChatModel>(
       builder: (BuildContext inContext, FlutterChatModel inModel, Widget? inChild) {
         Connector connector = Connector(inModel);
-        return Scaffold(resizeToAvoidBottomInset : false,
+        return Scaffold(resizeToAvoidBottomInset : true,
           appBar : AppBar(title : Text(inModel.currentRoomName),
             actions : [
-              // Function menu.
+              // O menu overflow (3 pontos)
               PopupMenuButton(
                 onSelected : (inValue) {
                   if (inValue == "invite") {
                     _inviteOrKick(inContext, "invite");
                   } else if (inValue == "leave") {
                     connector.leave(inModel.userName, inModel.currentRoomName, () {
-                      // Clear out the information in the model about the current room and disable the
-                      // Current Room drawer option.
                       inModel.removeRoomInvite(inModel.currentRoomName);
                       inModel.setCurrentRoomUserList({});
                       inModel.setCurrentRoomName(FlutterChatModel.DEFAULT_ROOM_NAME);
                       inModel.setCurrentRoomEnabled(false);
-                      // Route back to the home screen.
                       Navigator.of(inContext).pushNamedAndRemoveUntil("/", ModalRoute.withName("/"));
                     });
                   } else if (inValue == "close") {
                     connector.close(inModel.currentRoomName, () {
-                      // Route back to the home screen.
                       Navigator.of(inContext).pushNamedAndRemoveUntil("/", ModalRoute.withName("/"));
                     });
                   } else if (inValue == "kick") {
@@ -60,23 +51,23 @@ class _Room extends State {
                 },
                 itemBuilder : (BuildContext inPMBContext) {
                   return <PopupMenuEntry<String>>[
-                    // Options available for all users.
+                    // Opções disponíveis para todos os usuários
                     PopupMenuItem(value : "leave", child : Text("Leave Room")),
                     PopupMenuItem(value : "invite", child : Text("Invite A User")),
                     PopupMenuDivider(),
-                    // Options available only for the user who created the room.
+                    // Opções disponíveis apenas para o criador da sala
                     PopupMenuItem(value : "close", child : Text("Close Room"), enabled : inModel.creatorFunctionsEnabled),
                     PopupMenuItem(value : "kick", child : Text("Kick User"), enabled : inModel.creatorFunctionsEnabled)
                   ];
                 }
               )
             ]
-          ), /* End AppBar. */
+          ),
           drawer : AppDrawer(),
           body : Padding(padding : EdgeInsets.fromLTRB(6, 14, 6, 6),
             child : Column(
               children : [
-                /* User list. */
+                //A lista de usuários
                 ExpansionPanelList(
                   expansionCallback : (inIndex, inExpanded) => setState(() { _expanded = !_expanded; }),
                   children : [
@@ -93,9 +84,9 @@ class _Room extends State {
                       )
                     )
                   ]
-                ), /* End ExpansionPanelList. */
+                ),
                 Container(height : 10),
-                /* Message list. */
+                //A lista de mensagens
                 Expanded(child : ListView.builder(controller : _controller,
                   itemCount : inModel.currentRoomMessages.length,
                   itemBuilder : (inContext, inIndex) {
@@ -105,9 +96,9 @@ class _Room extends State {
                       title : Text(message["message"])
                     );
                   }
-                )), /* End message ListView. */
+                )),
                 Divider(),
-                /* Post fields. */
+                //Postagem de mensagem
                 Row(children : [
                   Flexible(child : TextField(controller : _postEditingController,
                     onChanged : (String inText) => setState(() { _postMessage = inText; }),
@@ -116,14 +107,13 @@ class _Room extends State {
                   Container(margin : new EdgeInsets.fromLTRB(2, 0, 2, 0),
                     child : IconButton(icon : Icon(Icons.send), color : Colors.blue,
                       onPressed : () {
-                        // Post message to server.
                         connector.post(inModel.userName, inModel.currentRoomName, _postMessage, (inStatus) {
                           print("Room.post callback: inStatus = $inStatus");
-                          // If it was successful, add to the list of messages for the current room so it shows
-                          // up on the screen and jump the list to the bottom so the message appears.
                           if (inStatus == "ok") {
                             inModel.addMessage(inModel.userName, _postMessage);
+                            //sempre exibe o fim da listagem de mensagens
                             _controller.jumpTo(_controller.position.maxScrollExtent);
+                            _postEditingController.clear();
                           }
                         });
                       }
@@ -143,16 +133,11 @@ class _Room extends State {
   /// @param inContent      The BuildContext from the calling widget.
   /// @param inInviteOrKick "invite" to invite a user, "kick" to kick them.
   _inviteOrKick(final BuildContext inContext, final String inInviteOrKick) {
-    FlutterChatModel model = Provider.of<FlutterChatModel>(inContext);
+    FlutterChatModel model = Provider.of<FlutterChatModel>(inContext, listen: false);
     Connector connector = Connector(model);
-    // Call server to get user list.
     connector.listUsers((inUserList) {
       print("## Room.listUsers: callback: inUserList=$inUserList");
-
-      // Update the model with the new list of users.
       model.setUserList(inUserList);
-
-      // Show dialog so user can select someone to invite or kick.
       showDialog(context : inContext,
         builder : (BuildContext inDialogContext) {
                 return AlertDialog(title : Text("Select user to $inInviteOrKick"),
@@ -166,7 +151,7 @@ class _Room extends State {
                         } else {
                           user = model.currentRoomUserList[inIndex];
                         }
-                        // Don't show this user in the list.
+                        // Omite o usuário da listagem
                         if (user["userName"] == model.userName) { return Container(); }
                         // Each user will be displayed in a box with a gradient background, just for fun!
                         return Container(
@@ -192,12 +177,10 @@ class _Room extends State {
                             onTap : () {
                               if (inInviteOrKick == "invite") {
                                 connector.invite(user["userName"], model.currentRoomName, model.userName, () {
-                                  // Hide user selection dialog.
                                   Navigator.of(inContext).pop();
                                 });
                               } else {
                                 connector.kick(user["userName"], model.currentRoomName, () {
-                                  // Hide user selection dialog.
                                   Navigator.of(inContext).pop();
                                 });
                               }
