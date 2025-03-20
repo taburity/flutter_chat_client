@@ -7,8 +7,8 @@ import "utils.dart" as utils;
 
 class Connector {
 
-  // Endereço IP do servidor em execução;
-  String serverURL = "http://10.0.2.2:80"; //equivalente a localhost para emulador android
+  // Endereço IP do servidor cujo valor equivale a localhost para emulador android
+  String serverURL = "http://10.0.2.2:80";
 
   //Instância única da classe SocketIO
   late IO.Socket _io;
@@ -27,9 +27,9 @@ class Connector {
     return _instance ??= Connector._internal(model);
   }
 
-  // ------------------------------ NONE-MESSAGE RELATED METHODS ------------------------------
+  // ------------------------------ MÉTODOS NÃO RELACIONADOS AO ENVIO DE MENSAGENS ------------------------------
 
-  // Exibe caixa de diálogo para o usuário esperar (em operações rápidas, pode aparecer só o clarão)
+  //Exibe caixa de diálogo para o usuário esperar (em operações rápidas, pode aparecer só o clarão)
   void showPleaseWait() {
     print("## Connector.showPleaseWait()");
     showDialog(context: utils.navigatorKey.currentContext!, barrierDismissible: false,
@@ -60,7 +60,7 @@ class Connector {
     );
   }
 
-  ///Omite a caixa de diálogo de espera
+  //Omite a caixa de diálogo de espera
   void hidePleaseWait() {
     print("## Connector.hidePleaseWait()");
     Navigator.of(utils.navigatorKey.currentContext!).pop();
@@ -106,7 +106,7 @@ class Connector {
   para o callback certas propriedades do mapa ou o mapa inteiro.
    */
 
-  /// Validate the user.  Called from LoginDialog when there were no stored credentials for the user.
+  // Valida o usuário, sendo invocada de LoginDialog quando não há credenciais armazenadas
   void validate(final String inUserName, final String inPassword,
       final Function inCallback, FlutterChatModel model) {
     print("## Connector.validate(): inUserName = $inUserName, inPassword = $inPassword");
@@ -124,11 +124,10 @@ class Connector {
     });
   }
 
-  /// Recupera a lista de salas no servidor atualmente
+  // Recupera a lista de salas no servidor atualmente
   void listRooms(final Function inCallback) {
     print("## Connector.listRooms()");
     showPleaseWait();
-
     _io.emitWithAck("listRooms", "{}",
     ack: (response){
       print("## Connector.listRooms(): callback: response = $response");
@@ -137,7 +136,7 @@ class Connector {
     });
   }
 
-  /// Cria uma sala a partir da tela de lobby
+  // Cria uma sala a partir da tela de lobby
   void create(final String inRoomName, final String inDescription,
       final int inMaxPeople, final bool inPrivate,
       final String inCreator, final Function inCallback) {
@@ -159,7 +158,7 @@ class Connector {
     });
   }
 
-  /// Chamada quando o usuário clica em uma sala da lista de salas na tela de lobby para ingressar nela
+  // Chamada quando o usuário clica em uma sala da lista de salas na tela de lobby para ingressar nela
   void join(final String inUserName, final String inRoomName, final Function inCallback) {
     print(
         "## Connector.join(): inUserName = $inUserName, inRoomName = $inRoomName");
@@ -174,13 +173,12 @@ class Connector {
     });
   }
 
-  /// Chamada quando o usuário sai da sala em que está atualmente
+  // Chamada quando o usuário sai da sala em que está atualmente
   void leave(final String inUserName, final String inRoomName,
       final Function inCallback) {
     print(
         "## Connector.leave(): inUserName = $inUserName, inRoomName = $inRoomName");
     showPleaseWait();
-
     _io.emitWithAck("leave", {
       "userName": inUserName,
       "roomName": inRoomName,
@@ -191,22 +189,19 @@ class Connector {
     });
   }
 
-  /// Chamada para obter uma lista atualizada de usuários no servidor quando o
-  /// usuário seleciona a lista em AppDrawer
+  // Obtém a lista atualizada de usuários no servidor quando solicitado pelo AppDrawer
   void listUsers(final Function inCallback) {
     print("## Connector.listUsers()");
     showPleaseWait();
-
     _io.emitWithAck("listUsers", "{}",
         ack: (response){
           print("## Connector.listUsers(): callback: response = $response");
           hidePleaseWait();
           inCallback(response);
     });
-
   }
 
-  /// Chamada quando o usuário convida outro usuário para a sala
+  // Chamada quando o usuário convida outro usuário para a sala
   void invite(final String inUserName, final String inRoomName,
       final String inInviterName,
       final Function inCallback) {
@@ -226,7 +221,7 @@ class Connector {
     });
   }
 
-  /// Chamada para postar uma mensagem na sala atual
+  // Chamada para postar uma mensagem na sala atual
   void post(final String inUserName, final String inRoomName,
       final String inMessage,
       final Function inCallback) {
@@ -246,7 +241,7 @@ class Connector {
     });
   }
 
-  /// Chamada pelo criador da sala para fechá-la
+  // Chamada pelo criador da sala para fechá-la
   void close(final String inRoomName, final Function inCallback) {
     print("## Connector.close(): inRoomName = $inRoomName");
     showPleaseWait();
@@ -259,7 +254,7 @@ class Connector {
     });
   }
 
-  /// Chamada pelo criador da sala para expulsar um usuário dela
+  // Chamada pelo criador da sala para expulsar um usuário dela
   void kick(final String inUserName, final String inRoomName,
       final Function inCallback) {
     print("## Connector.kick(): inUserName = $inUserName, inRoomName = $inRoomName");
@@ -276,8 +271,8 @@ class Connector {
 
   // ------------------------------ FUNÇÕES DE MENSAGENS DESTINADAS AO CLIENTE ------------------------------
 
-  /// Chamada quando um novo usuário é criado.
-  /// O servidor envia uma lista de usuários completa e essa função apenas a define no modelo
+  // Chamada quando um novo usuário é criado.
+  // O servidor envia uma lista de usuários completa e essa função apenas a define no modelo
   void newUser(inData) {
     print("## Connector.newUser(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
@@ -285,8 +280,8 @@ class Connector {
     model.setUserList(payload);
   }
 
-  /// Chamada quando uma nova sala é criada.
-  /// O servidor envia uma lista de salas completa e essa função apenas a define no modelo
+  // Chamada quando uma nova sala é criada.
+  // O servidor envia uma lista de salas completa e essa função apenas a define no modelo
   void created(inData) {
     print("## Connector.created(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
@@ -294,13 +289,13 @@ class Connector {
     model.setRoomList(payload);
   }
 
-  /// Chamada quando uma sala é fechada.
+  // Chamada quando uma sala é fechada.
   void closed(inData) {
     print("## Connector.closed(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
     print("## Connector.closed(): payload = $payload");
-    model.setRoomList(
-        payload); //a lista de salas atualizada é definida no modelo
+    //a lista de salas atualizada é definida no modelo
+    model.setRoomList(payload);
 
     //Se o usuário está na sala que foi fechada...
     if (payload["roomName"] == model.currentRoomName) {
@@ -320,37 +315,34 @@ class Connector {
     }
   }
 
-  /// Chamada quando um novo usuário entra em uma sala
+  // Chamada quando um novo usuário entra em uma sala
   void joined(inData) {
     print("## Connector.joined(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
     print("## Connector.joined(): payload = $payload");
-
     //Atualiza a lista de usuários na sala se o usuário estiver na sala que possui novo participante
     if (model.currentRoomName == payload["roomName"]) {
       model.setCurrentRoomUserList(payload["users"]);
     }
   }
 
-  /// Chamada quando um usuário sai de uma sala
+  // Chamada quando um usuário sai de uma sala
   void left(inData) {
     print("## Connector.left(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
     print("## Connector.left(): payload = $payload");
-
     //Atualiza a lista de usuários na sala se o usuário estiver na sala de onde o participante saiu
     if (model.currentRoomName == payload["room"]["roomName"]) {
       model.setCurrentRoomUserList(payload["room"]["users"]);
     }
   }
 
-  /// Chamada quando o criador da sala expulsar um usuário
-  /// Mesmo caso do usuário estar em uma sala que foi fechada, tem que limpar os dados no modelo
+  // Chamada quando o criador da sala expulsar um usuário
+  // Mesmo caso do usuário estar em uma sala que foi fechada, tem que limpar os dados no modelo
   void kicked(inData) {
     print("## Connector.kicked(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
     print("## Connector.kicked(): payload = $payload");
-
     //remove convites
     model.removeRoomInvite(payload["roomName"]);
     //limpa a lista de usuários
@@ -380,7 +372,6 @@ class Connector {
     model.addRoomInvite(roomName);
 
     //Exibir um snackbar para alertar o usuário sobre o convite, que some depois de 1 minuto
-    //Exercício: adicionar algum tipo de indicador da na lista de salas no lobby sobre convites
     ScaffoldMessenger.of(utils.rootBuildContext!).showSnackBar(
         SnackBar(backgroundColor: Colors.amber, duration: Duration(seconds: 60),
             content: Text(
@@ -395,12 +386,11 @@ class Connector {
     );
   }
 
-  /// Executada quando uma mensagem é postada em uma sala
+  // Executada quando uma mensagem é postada em uma sala
   void posted(inData) {
     print("## Connector.posted(): inData = $inData");
     Map<String, dynamic> payload = jsonDecode(inData);
     print("## Connector.posted(): payload = $payload");
-
     // Se o usuário estiver na sala para a qual a mensagem foi enviada, atualiza o modelo
     if (model.currentRoomName == payload["roomName"]) {
       model.addMessage(payload["userName"], payload["message"]);
