@@ -52,7 +52,7 @@ class FlutterChatMain extends StatelessWidget {
           "/UserList": (screenContext) => UserList(), //lista de usuários no servidor
           "/CreateRoom": (screenContext) => CreateRoom() //criação de uma sala
         },
-        home: Home(), // Home chamará executeAfterBuild depois de renderizado
+        home: Home(),
         navigatorKey: utils.navigatorKey
       ),
     );
