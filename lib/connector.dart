@@ -69,7 +69,6 @@ class Connector {
   //É chamada uma vez da caixa de diálogo de login
   void connectToServer(final Function inCallback, FlutterChatModel model) {
     print("## Connector.connectToServer(): serverURL = $serverURL");
-    //Cria o objeto SocketIO configurando-o para usar WebSocket e desativar conexão automática
     _io = IO.io(serverURL, IO.OptionBuilder()
         .setTransports(['websocket'])
         .disableAutoConnect()
@@ -110,7 +109,6 @@ class Connector {
   void validate(final String inUserName, final String inPassword,
       final Function inCallback, FlutterChatModel model) {
     print("## Connector.validate(): inUserName = $inUserName, inPassword = $inPassword");
-    //exibe a caixa de diálogo de espera
     showPleaseWait();
     //envia mensagem validade para o servidor com objeto JSON com usuário e senha
     _io.emitWithAck('validate', {
@@ -119,8 +117,7 @@ class Connector {
     }, ack: (response) {
       print("## Connector.validate(): callback: response = $response");
       hidePleaseWait();
-      inCallback(
-          response["status"]); //executa a função callback informando o status da operação
+      inCallback(response["status"]);
     });
   }
 
