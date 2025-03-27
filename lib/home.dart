@@ -11,20 +11,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   @override
   void initState() {
     super.initState();
 
     // Aguarda o primeiro frame ser renderizado para chamar executeAfterBuild()
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      executeAfterBuild(this.context);
+      if (mounted && !utils.loginAlreadyChecked) {
+        utils.loginAlreadyChecked = true;
+        executeAfterBuild(this.context);
+      }
     });
   }
 
   @override
   Widget build(final BuildContext inContext) {
     print("## Home.build()");
-    utils.rootBuildContext = inContext;
+
     return Consumer<FlutterChatModel>(
         builder: (BuildContext inContext, FlutterChatModel inModel, Widget? inChild) {
           return Scaffold(

@@ -7,3 +7,4 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 BuildContext? rootBuildContext; // BuildContext do widget raiz
 Directory? docsDir = Directory.systemTemp; //valor default
 String? credentials;
+bool loginAlreadyChecked = false;
