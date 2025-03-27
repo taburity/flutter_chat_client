@@ -1,4 +1,3 @@
-import "dart:convert";
 import "flutter_chat_model.dart" show FlutterChatModel;
 import "package:flutter/material.dart";
 import 'package:socket_io_client_flutter/socket_io_client_flutter.dart' as IO;
