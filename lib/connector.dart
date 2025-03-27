@@ -272,26 +272,20 @@ class Connector {
 
   // ------------------------------ FUNÇÕES DE MENSAGENS DESTINADAS AO CLIENTE ------------------------------
 
-  // Chamada quando um novo usuário é criado.
-  // O servidor envia uma lista de usuários completa e essa função apenas a define no modelo
   void newUser(inData) {
     print("## Connector.newUser(): inData = $inData");
     model.setUserList(inData);
   }
 
-  // Chamada quando uma nova sala é criada.
-  // O servidor envia uma lista de salas completa e essa função apenas a define no modelo
   void created(inData) {
     print("## Connector.created(): inData = $inData");
     model.setRoomList(inData);
   }
 
-  // Chamada quando uma sala é fechada.
   void closed(inData) {
     print("## Connector.closed(): inData = $inData");
     //a lista de salas atualizada é definida no modelo
     model.setRoomList(inData);
-
     //Se o usuário está na sala que foi fechada...
     if (inData["roomName"] == model.currentRoomName) {
       //Se houver convite para essa sala, ele deve ser removido
@@ -305,13 +299,11 @@ class Connector {
       //atualiza a saudação na tela inicial para o usuário saber que a sala foi fechada
       model.setGreeting("The room you were in was closed by its creator.");
       //navega para a tela inicial
-      Navigator.of(utils.rootBuildContext!).pushReplacementNamed("/");
-      /*Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
-          "/", ModalRoute.withName("/"));*/
+      Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
+          "/", ModalRoute.withName("/"));
     }
   }
 
-  // Chamada quando um novo usuário entra em uma sala
   void joined(inData) {
     print("## Connector.joined(): inData = $inData");
     //Atualiza a lista de usuários na sala se o usuário estiver na sala que possui novo participante
@@ -320,7 +312,6 @@ class Connector {
     }
   }
 
-  // Chamada quando um usuário sai de uma sala
   void left(inData) {
     print("## Connector.left(): inData = $inData");
     //Atualiza a lista de usuários na sala se o usuário estiver na sala de onde o participante saiu
@@ -329,8 +320,6 @@ class Connector {
     }
   }
 
-  // Chamada quando o criador da sala expulsar um usuário
-  // Mesmo caso do usuário estar em uma sala que foi fechada, tem que limpar os dados no modelo
   void kicked(inData) {
     print("## Connector.kicked(): inData = $inData");
     //remove convites
@@ -344,12 +333,10 @@ class Connector {
     //atualiza a saudação
     model.setGreeting("What did you do?! You got kicked from the room! D'oh!");
     //navega para a tela inicial
-    Navigator.of(utils.rootBuildContext!).pushReplacementNamed("/");
-    /*Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
-          "/", ModalRoute.withName("/"));*/
+    Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
+          "/", ModalRoute.withName("/"));
   }
 
-  /// Executada quando um usuário é convidado para uma sala
   void invited(inData) async {
     print("## Connector.invited(): inData = $inData");
     //processa a resposta para obter o nome da sala
@@ -374,7 +361,6 @@ class Connector {
     );
   }
 
-  // Executada quando uma mensagem é postada em uma sala
   void posted(inData) {
     print("## Connector.posted(): inData = $inData");
     // Se o usuário estiver na sala para a qual a mensagem foi enviada, atualiza o modelo
