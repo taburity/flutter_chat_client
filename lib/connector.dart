@@ -24,7 +24,12 @@ class Connector {
 
   //Fábrica para inicializar apenas uma vez
   factory Connector(FlutterChatModel model) {
-    return _instance ??= Connector._internal(model);
+    if(_instance == null){
+      _instance = Connector._internal(model);
+    } else {
+      _instance!.model = model;
+    }
+    return _instance!;
   }
 
   // ------------------------------ MÉTODOS NÃO RELACIONADOS AO ENVIO DE MENSAGENS ------------------------------
@@ -272,32 +277,26 @@ class Connector {
   // O servidor envia uma lista de usuários completa e essa função apenas a define no modelo
   void newUser(inData) {
     print("## Connector.newUser(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.newUser(): payload = $payload");
-    model.setUserList(payload);
+    model.setUserList(inData);
   }
 
   // Chamada quando uma nova sala é criada.
   // O servidor envia uma lista de salas completa e essa função apenas a define no modelo
   void created(inData) {
     print("## Connector.created(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.created(): payload = $payload");
-    model.setRoomList(payload);
+    model.setRoomList(inData);
   }
 
   // Chamada quando uma sala é fechada.
   void closed(inData) {
     print("## Connector.closed(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.closed(): payload = $payload");
     //a lista de salas atualizada é definida no modelo
-    model.setRoomList(payload);
+    model.setRoomList(inData);
 
     //Se o usuário está na sala que foi fechada...
-    if (payload["roomName"] == model.currentRoomName) {
+    if (inData["roomName"] == model.currentRoomName) {
       //Se houver convite para essa sala, ele deve ser removido
-      model.removeRoomInvite(payload["roomName"]);
+      model.removeRoomInvite(inData["roomName"]);
       //limpa a lista de usuários da sala atual
       model.setCurrentRoomUserList({});
       //ajusta o nome da sala
@@ -307,30 +306,27 @@ class Connector {
       //atualiza a saudação na tela inicial para o usuário saber que a sala foi fechada
       model.setGreeting("The room you were in was closed by its creator.");
       //navega para a tela inicial
-      Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
-          "/", ModalRoute.withName("/"));
+      Navigator.of(utils.rootBuildContext!).pushReplacementNamed("/");
+      /*Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
+          "/", ModalRoute.withName("/"));*/
     }
   }
 
   // Chamada quando um novo usuário entra em uma sala
   void joined(inData) {
     print("## Connector.joined(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.joined(): payload = $payload");
     //Atualiza a lista de usuários na sala se o usuário estiver na sala que possui novo participante
-    if (model.currentRoomName == payload["roomName"]) {
-      model.setCurrentRoomUserList(payload["users"]);
+    if (model.currentRoomName == inData["roomName"]) {
+      model.setCurrentRoomUserList(inData["users"]);
     }
   }
 
   // Chamada quando um usuário sai de uma sala
   void left(inData) {
     print("## Connector.left(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.left(): payload = $payload");
     //Atualiza a lista de usuários na sala se o usuário estiver na sala de onde o participante saiu
-    if (model.currentRoomName == payload["room"]["roomName"]) {
-      model.setCurrentRoomUserList(payload["room"]["users"]);
+    if (model.currentRoomName == inData["room"]["roomName"]) {
+      model.setCurrentRoomUserList(inData["room"]["users"]);
     }
   }
 
@@ -338,10 +334,8 @@ class Connector {
   // Mesmo caso do usuário estar em uma sala que foi fechada, tem que limpar os dados no modelo
   void kicked(inData) {
     print("## Connector.kicked(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.kicked(): payload = $payload");
     //remove convites
-    model.removeRoomInvite(payload["roomName"]);
+    model.removeRoomInvite(inData["roomName"]);
     //limpa a lista de usuários
     model.setCurrentRoomUserList({});
     //ajusta o nome da sala atual
@@ -351,20 +345,18 @@ class Connector {
     //atualiza a saudação
     model.setGreeting("What did you do?! You got kicked from the room! D'oh!");
     //navega para a tela inicial
-    Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
-        "/", ModalRoute.withName("/"));
+    Navigator.of(utils.rootBuildContext!).pushReplacementNamed("/");
+    /*Navigator.of(utils.rootBuildContext!).pushNamedAndRemoveUntil(
+          "/", ModalRoute.withName("/"));*/
   }
 
   /// Executada quando um usuário é convidado para uma sala
   void invited(inData) async {
     print("## Connector.invited(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.invited(): payload = $payload");
-
     //processa a resposta para obter o nome da sala
-    String roomName = payload["roomName"];
+    String roomName = inData["roomName"];
     //o usuário que convidou
-    String inviterName = payload["inviterName"];
+    String inviterName = inData["inviterName"];
     //atualiza o modelo com o novo convite
     model.addRoomInvite(roomName);
 
@@ -386,11 +378,9 @@ class Connector {
   // Executada quando uma mensagem é postada em uma sala
   void posted(inData) {
     print("## Connector.posted(): inData = $inData");
-    Map<String, dynamic> payload = jsonDecode(inData);
-    print("## Connector.posted(): payload = $payload");
     // Se o usuário estiver na sala para a qual a mensagem foi enviada, atualiza o modelo
-    if (model.currentRoomName == payload["roomName"]) {
-      model.addMessage(payload["userName"], payload["message"]);
+    if (model.currentRoomName == inData["roomName"]) {
+      model.addMessage(inData["userName"], inData["message"]);
     }
   }
 
