@@ -41,6 +41,7 @@ class FlutterChatMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("## FlutterChat.build()");
+    utils.rootBuildContext = context;
 
     return ChangeNotifierProvider<FlutterChatModel>(
       create: (context) => FlutterChatModel(),
