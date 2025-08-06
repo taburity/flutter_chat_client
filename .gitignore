@@ -5,11 +5,9 @@
 *.swp
 .DS_Store
 .atom/
-.build/
 .buildlog/
 .history
 .svn/
-.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -33,6 +31,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Flutter generated files
+**/generated_plugin_registrant.*
+**/GeneratedPluginRegistrant.*
+**/generated_plugins.cmake
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +46,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+pubspec.lock
+packages/
+
+# Gradle C++ build folder
+android/app/.cxx
