@@ -8,17 +8,22 @@ import '../utils.dart' as utils;
 class ChatViewModel extends ChangeNotifier {
   final Model _model;
   final Connector _connector = Connector.instance;
+  late AppLocalizations _l10n;
 
-  ChatViewModel(this._model, AppLocalizations l10n) {
+  ChatViewModel(this._model) {
     // Assina eventos do servidor
     _connector.onNewUser.listen((data) => _setUserList(Map.from(data)));
     _connector.onCreated.listen((data) => _setRoomList(Map.from(data)));
-    _connector.onClosed.listen((data) => _handleClosed(Map.from(data), l10n));
+    _connector.onClosed.listen((data) => _handleClosed(Map.from(data)));
     _connector.onJoined.listen((data) => _handleJoined(Map.from(data)));
     _connector.onLeft.listen((data) => _handleLeft(Map.from(data)));
-    _connector.onKicked.listen((data) => _handleKicked(Map.from(data), l10n));
-    _connector.onInvited.listen((data) => _handleInvited(Map.from(data), l10n));
+    _connector.onKicked.listen((data) => _handleKicked(Map.from(data)));
+    _connector.onInvited.listen((data) => _handleInvited(Map.from(data)));
     _connector.onPosted.listen((data) => _handlePosted(Map.from(data)));
+  }
+
+  void setLocalizations(AppLocalizations l10n) {
+    _l10n = l10n;
   }
 
   // Getters para a View
@@ -34,18 +39,65 @@ class ChatViewModel extends ChangeNotifier {
   Map get roomInvites => _model.roomInvites;
 
   // Mutadores + notify
-  void _setGreeting(String v) { _model.greeting = v; notifyListeners(); }
-  void _setUserName(String v) { _model.userName = v; notifyListeners(); }
-  void _setCurrentRoomName(String v) { _model.currentRoomName = v; notifyListeners(); }
-  void _setCurrentRoomEnabled(bool v) { _model.currentRoomEnabled = v; notifyListeners(); }
-  void _setCreatorFunctionsEnabled(bool v) { _model.creatorFunctionsEnabled = v; notifyListeners(); }
-  void _clearMessages() { _model.clearCurrentRoomMessages(); notifyListeners(); }
-  void _setRoomList(Map serverMap) { _model.setRoomListFromServerMap(serverMap); notifyListeners(); }
-  void _setUserList(Map serverMap) { _model.setUserListFromServerMap(serverMap); notifyListeners(); }
-  void _setCurrentRoomUserList(Map serverMap) { _model.setCurrentRoomUserListFromServerMap(serverMap); notifyListeners(); }
-  void _addMessage(String user, String msg) { _model.addMessage(user, msg); notifyListeners(); }
-  void _addInvite(String room) { _model.addRoomInvite(room); notifyListeners(); }
-  void _removeInvite(String room) { _model.removeRoomInvite(room); notifyListeners(); }
+  void _setGreeting(String v) {
+    _model.greeting = v;
+    notifyListeners();
+  }
+
+  void _setUserName(String v) {
+    _model.userName = v;
+    notifyListeners();
+  }
+
+  void _setCurrentRoomName(String v) {
+    _model.currentRoomName = v;
+    notifyListeners();
+  }
+
+  void _setCurrentRoomEnabled(bool v) {
+    _model.currentRoomEnabled = v;
+    notifyListeners();
+  }
+
+  void _setCreatorFunctionsEnabled(bool v) {
+    _model.creatorFunctionsEnabled = v;
+    notifyListeners();
+  }
+
+  void _clearMessages() {
+    _model.clearCurrentRoomMessages();
+    notifyListeners();
+  }
+
+  void _setRoomList(Map serverMap) {
+    _model.setRoomListFromServerMap(serverMap);
+    notifyListeners();
+  }
+
+  void _setUserList(Map serverMap) {
+    _model.setUserListFromServerMap(serverMap);
+    notifyListeners();
+  }
+
+  void _setCurrentRoomUserList(Map serverMap) {
+    _model.setCurrentRoomUserListFromServerMap(serverMap);
+    notifyListeners();
+  }
+
+  void _addMessage(String user, String msg) {
+    _model.addMessage(user, msg);
+    notifyListeners();
+  }
+
+  void _addInvite(String room) {
+    _model.addRoomInvite(room);
+    notifyListeners();
+  }
+
+  void _removeInvite(String room) {
+    _model.removeRoomInvite(room);
+    notifyListeners();
+  }
 
   // Autenticação (chamar da LoginView)
   Future<String> connectAndValidate(String username, String password, AppLocalizations l10n) async {
@@ -63,8 +115,15 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   // Salas / Usuários
-  Future<void> fetchRooms() async { final res = await _connector.listRooms(); _setRoomList(res); }
-  Future<void> fetchUsers() async { final res = await _connector.listUsers(); _setUserList(res); }
+  Future<void> fetchRooms() async {
+    final res = await _connector.listRooms();
+    _setRoomList(res);
+  }
+
+  Future<void> fetchUsers() async {
+    final res = await _connector.listUsers();
+    _setUserList(res);
+  }
 
   Future<void> createRoom(String title, String description, int maxPeople, bool isPrivate, BuildContext context,
       AppLocalizations l10n) async {
@@ -137,7 +196,7 @@ class ChatViewModel extends ChangeNotifier {
     }
   }
 
-  void _handleInvited(Map data, AppLocalizations l10n) {
+  void _handleInvited(Map data) {
     final roomName = data['roomName'];
     _addInvite(roomName);
     final ctx = utils.navigatorKey.currentContext;
@@ -146,7 +205,7 @@ class ChatViewModel extends ChangeNotifier {
         SnackBar(
           backgroundColor: Colors.amber,
           duration: Duration(seconds: 60),
-          content: Text(l10n.new_invite(roomName, data['inviterName'])),
+          content: Text(_l10n.new_invite(roomName, data['inviterName'])),
           action: SnackBarAction(label: 'Ok', onPressed: () {}),
         ),
       );
@@ -165,24 +224,24 @@ class ChatViewModel extends ChangeNotifier {
     }
   }
 
-  void _handleClosed(Map data, AppLocalizations l10n) {
+  void _handleClosed(Map data) {
     _setRoomList(data);
     if (data['roomName'] == currentRoomName) {
       _removeInvite(data['roomName']);
       _setCurrentRoomUserList({});
       _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
       _setCurrentRoomEnabled(false);
-      _setGreeting(l10n.closed_room);
+      _setGreeting(_l10n.closed_room);
       utils.navigatorKey.currentState?.pushNamedAndRemoveUntil('/', ModalRoute.withName('/'));
     }
   }
 
-  void _handleKicked(Map data, AppLocalizations l10n) {
+  void _handleKicked(Map data) {
     _removeInvite(data['roomName']);
     _setCurrentRoomUserList({});
     _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
     _setCurrentRoomEnabled(false);
-    _setGreeting(l10n.kicked);
+    _setGreeting(_l10n.kicked);
     utils.navigatorKey.currentState?.pushNamedAndRemoveUntil('/', ModalRoute.withName('/'));
   }
 }

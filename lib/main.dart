@@ -48,33 +48,33 @@ class FlutterChatMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCreds = utils.credentials != null && utils.credentials!.isNotEmpty;
-
     return ChangeNotifierProvider<ChatViewModel>(
-      create: (_) => ChatViewModel(Model(), AppLocalizations.of(context)!),
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
+      create: (_) => ChatViewModel(Model()),
+      child: MaterialApp(
             navigatorKey: utils.navigatorKey,
             initialRoute: hasCreds ? '/' : '/Login',
             routes: {
-              '/': (_) => HomeView(),
-              '/Lobby': (_) => LobbyView(),
-              '/Room': (_) => RoomView(),
-              '/UserList': (_) => UserListView(),
-              '/CreateRoom': (_) => CreateRoomView(),
-              '/Login': (_) => LoginView(),
+              '/': (_) => const HomeView(),
+              '/Lobby': (_) => const LobbyView(),
+              '/Room': (_) => const RoomView(),
+              '/UserList': (_) => const UserListView(),
+              '/CreateRoom': (_) => const CreateRoomView(),
+              '/Login': (_) => const LoginView(),
             },
             localizationsDelegates: [
+              AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: [
-              Locale('en')
-            ],
-          );
-        },
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) {
+              final l10n = AppLocalizations.of(context)!;
+              context.read<ChatViewModel>().setLocalizations(l10n);
+              return child!;
+            },
       ),
     );
   }
+
 }
