@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:socket_io_client_flutter/socket_io_client_flutter.dart' as IO;
 
 class Connector {
-
   // Endereço IP do servidor cujo valor equivale a localhost para emulador android
   String serverURL = 'http://10.0.2.2:80';
 
@@ -67,7 +66,7 @@ class Connector {
   }
 
   void _registerListeners() {
-    //quando o servidor enviar uma mensagem, o dado recebido vai ser adicionado ao stream adequado
+    //a cada mensagem do servidor, o dado recebido é adicionado ao stream
     _io.on('newUser', (data) => _newUserCtrl.add(data));
     _io.on('created', (data) => _createdCtrl.add(data));
     _io.on('closed', (data) => _closedCtrl.add(data));
@@ -232,7 +231,7 @@ class Connector {
     return c.future;
   }
 
-  // Limpeza
+  // Limpeza -- seria chamado ao fazer logout ou no encerramento do app
   void dispose() {
     _newUserCtrl.close();
     _createdCtrl.close();
