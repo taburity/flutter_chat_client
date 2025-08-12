@@ -9,9 +9,14 @@ class Connector {
   //Instância única da classe SocketIO
   late IO.Socket _io;
   //Instância única
-  static Connector? _instance;
+  static final Connector instance = Connector._internal();
+  //Construtor privado
+  Connector._internal();
 
-  // Streams para eventos push do servidor (broadcast para múltiplos listeners)
+  // Streams para eventos do servidor
+  // Quando vier dados do servidor, quem estiver ouvindo o Stream vai ser notificado
+  // dynamic porque o stream pode carregar qualquer tipo de dado
+  // broadcast para possibilitar múltiplos ouvintes (várias telas reagindo ao evento)
   final _newUserCtrl = StreamController<dynamic>.broadcast();
   final _createdCtrl = StreamController<dynamic>.broadcast();
   final _closedCtrl = StreamController<dynamic>.broadcast();
@@ -20,15 +25,6 @@ class Connector {
   final _kickedCtrl = StreamController<dynamic>.broadcast();
   final _invitedCtrl = StreamController<dynamic>.broadcast();
   final _postedCtrl = StreamController<dynamic>.broadcast();
-
-  //Construtor privado
-  Connector._internal();
-
-  //Fábrica para inicializar apenas uma vez
-  factory Connector() {
-    _instance ??= Connector._internal();
-    return _instance!;
-  }
 
   // Getters dos streams
   Stream<dynamic> get onNewUser => _newUserCtrl.stream;
@@ -71,6 +67,7 @@ class Connector {
   }
 
   void _registerListeners() {
+    //quando o servidor enviar uma mensagem, o dado recebido vai ser adicionado ao stream adequado
     _io.on('newUser', (data) => _newUserCtrl.add(data));
     _io.on('created', (data) => _createdCtrl.add(data));
     _io.on('closed', (data) => _closedCtrl.add(data));
@@ -84,14 +81,26 @@ class Connector {
   // Valida o usuário quando não há credenciais armazenadas
   Future<Map> validate(String inUserName, String inPassword) async {
     print("## Connector.validate(): inUserName = $inUserName, inPassword = $inPassword");
+
+    // Cria um Completer para controlar manualmente um Future que retornará um Map
+    // Nesse momento, o Future está "pendente" (ainda não resolvido)
     final c = Completer<Map>();
+
+    // Envia o evento 'validate' para o servidor via Socket.IO,
+    // passando os dados do usuário e senha
+    // O ack será chamado quando o servidor enviar a resposta
     _io.emitWithAck('validate', {
       'userName': inUserName,
       'password': inPassword,
     }, ack: (response) {
       print("## Connector.validate(): callback: response = $response");
+
+      // Conclui o Future com a resposta convertida para Map
       c.complete(Map.from(response));
     });
+
+    // Retorna o Future associado ao Completer
+    // Esse Future será resolvido quando c.complete() for chamado no callback
     return c.future;
   }
 

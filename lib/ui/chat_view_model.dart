@@ -7,7 +7,7 @@ import '../utils.dart' as utils;
 
 class ChatViewModel extends ChangeNotifier {
   final Model _model;
-  final Connector _connector = Connector();
+  final Connector _connector = Connector.instance;
 
   ChatViewModel(this._model, AppLocalizations l10n) {
     // Assina eventos do servidor
