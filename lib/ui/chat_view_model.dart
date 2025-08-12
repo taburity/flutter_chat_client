@@ -109,7 +109,7 @@ class ChatViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Autenticação (chamar da LoginView)
+  // Autenticação (pela tela de Login)
   Future<String> connectAndValidate(String username, String password, AppLocalizations l10n) async {
     final c = Completer<String>();
     _connector.connectToServer(() async {
