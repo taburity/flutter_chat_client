@@ -97,7 +97,7 @@ class ChatViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _addIRoomnvite(String inRoomName) {
+  void _addIRoomInvite(String inRoomName) {
     print("## ChatViewModel.addRoomInvite(): inRoomName = $inRoomName");
     _model.roomInvites[inRoomName] = true;
     notifyListeners();
@@ -207,7 +207,7 @@ class ChatViewModel extends ChangeNotifier {
 
   void _handleInvited(Map data) {
     final roomName = data['roomName'];
-    _addIRoomnvite(roomName);
+    _addIRoomInvite(roomName);
     final ctx = utils.navigatorKey.currentContext;
     if (ctx != null) {
       ScaffoldMessenger.of(ctx).showSnackBar(
