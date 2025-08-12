@@ -65,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                         if (!_formKey.currentState!.validate()) return;
                         setState(() => _isSubmitting = true);
                         final status = await vm.connectAndValidate(
-                            _userController.text, _passController.text);
+                            _userController.text, _passController.text, l10n);
                         setState(() => _isSubmitting = false);
                         if (status == 'ok' || status == 'created') {
                           final file = File(join(utils.docsDir!.path, 'credentials'));

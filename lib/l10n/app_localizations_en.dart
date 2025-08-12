@@ -24,10 +24,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get room_name_error => 'Please enter a name no more than 14 characters long';
 
   @override
+  String get duplicated_room => 'Sorry, that room already exists';
+
+  @override
+  String get full_room => 'Sorry, that room is full';
+
+  @override
+  String get closed_room => 'The room you were in was closed by its creator';
+
+  @override
   String get no_rooms => 'There are no rooms yet. Why not add one?';
 
   @override
+  String get kicked => 'What did you do?! You got kicked from the room! D\'oh!';
+
+  @override
   String get no_invite => 'Sorry, you can\'t enter a private room without an invite';
+
+  @override
+  String new_invite(Object inviterName, Object roomName) {
+    return 'You\'ve been invited to the room \'$roomName\' by user \'$inviterName\'.\n\nYou can enter the room from the lobby.';
+  }
 
   @override
   String get leave_option => 'Leave Room';
@@ -46,4 +63,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get message_hint => 'Enter message';
+
+  @override
+  String welcome_new(Object username) {
+    return 'Welcome back, $username!';
+  }
+
+  @override
+  String welcome(Object username) {
+    return 'Welcome to the server, $username!';
+  }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat/l10n/app_localizations.dart';
 import '../domain/model.dart';
 import '../data/connector.dart';
 import '../utils.dart' as utils;
@@ -8,15 +9,15 @@ class ChatViewModel extends ChangeNotifier {
   final Model _model;
   final Connector _connector = Connector();
 
-  ChatViewModel(this._model) {
+  ChatViewModel(this._model, AppLocalizations l10n) {
     // Assina eventos do servidor
     _connector.onNewUser.listen((data) => _setUserList(Map.from(data)));
     _connector.onCreated.listen((data) => _setRoomList(Map.from(data)));
-    _connector.onClosed.listen((data) => _handleClosed(Map.from(data)));
+    _connector.onClosed.listen((data) => _handleClosed(Map.from(data), l10n));
     _connector.onJoined.listen((data) => _handleJoined(Map.from(data)));
     _connector.onLeft.listen((data) => _handleLeft(Map.from(data)));
-    _connector.onKicked.listen((data) => _handleKicked(Map.from(data)));
-    _connector.onInvited.listen((data) => _handleInvited(Map.from(data)));
+    _connector.onKicked.listen((data) => _handleKicked(Map.from(data), l10n));
+    _connector.onInvited.listen((data) => _handleInvited(Map.from(data), l10n));
     _connector.onPosted.listen((data) => _handlePosted(Map.from(data)));
   }
 
@@ -47,14 +48,14 @@ class ChatViewModel extends ChangeNotifier {
   void _removeInvite(String room) { _model.removeRoomInvite(room); notifyListeners(); }
 
   // Autenticação (chamar da LoginView)
-  Future<String> connectAndValidate(String username, String password) async {
+  Future<String> connectAndValidate(String username, String password, AppLocalizations l10n) async {
     final c = Completer<String>();
     _connector.connectToServer(() async {
       final res = await _connector.validate(username, password);
       final status = res['status'];
       if (status == 'ok' || status == 'created') {
         _setUserName(username);
-        _setGreeting(status == 'ok' ? 'Welcome back, $username!' : 'Welcome to the server, $username!');
+        _setGreeting(status == 'ok' ? l10n.welcome_new(username) : l10n.welcome(username));
       }
       c.complete(status);
     });
@@ -65,7 +66,8 @@ class ChatViewModel extends ChangeNotifier {
   Future<void> fetchRooms() async { final res = await _connector.listRooms(); _setRoomList(res); }
   Future<void> fetchUsers() async { final res = await _connector.listUsers(); _setUserList(res); }
 
-  Future<void> createRoom(String title, String description, int maxPeople, bool isPrivate, BuildContext context) async {
+  Future<void> createRoom(String title, String description, int maxPeople, bool isPrivate, BuildContext context,
+      AppLocalizations l10n) async {
     final res = await _connector.create(title, description, maxPeople, isPrivate, userName);
     if (res['status'] == 'created') {
       _setRoomList(res['rooms']);
@@ -73,12 +75,12 @@ class ChatViewModel extends ChangeNotifier {
     } else {
       final ctx = utils.navigatorKey.currentContext ?? context;
       ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text('Sorry, that room already exists')),
+        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(l10n.duplicated_room)),
       );
     }
   }
 
-  Future<void> joinRoom(String roomName, BuildContext context) async {
+  Future<void> joinRoom(String roomName, BuildContext context, AppLocalizations l10n) async {
     final res = await _connector.join(userName, roomName);
     final status = res['status'];
     if (status == 'joined') {
@@ -92,7 +94,7 @@ class ChatViewModel extends ChangeNotifier {
     } else if (status == 'full') {
       final ctx = utils.navigatorKey.currentContext ?? context;
       ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text('Sorry, that room is full')),
+        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(l10n.full_room)),
       );
     }
   }
@@ -111,14 +113,31 @@ class ChatViewModel extends ChangeNotifier {
     utils.navigatorKey.currentState?.pushNamedAndRemoveUntil('/', ModalRoute.withName('/'));
   }
 
-  Future<void> inviteUser(String target, VoidCallback onDone) async { await _connector.invite(target, currentRoomName, userName); onDone(); }
-  Future<void> kickUser(String target, VoidCallback onDone) async { await _connector.kick(target, currentRoomName); onDone(); }
-  Future<void> postMessage(String message) async { final res = await _connector.post(userName, currentRoomName, message); if (res['status'] == 'ok') { _addMessage(userName, message); } }
+  Future<void> inviteUser(String target, VoidCallback onDone) async {
+    await _connector.invite(target, currentRoomName, userName);
+    onDone();
+  }
+
+  Future<void> kickUser(String target, VoidCallback onDone) async {
+    await _connector.kick(target, currentRoomName);
+    onDone();
+  }
+
+  Future<void> postMessage(String message) async {
+    final res = await _connector.post(userName, currentRoomName, message);
+    if (res['status'] == 'ok') {
+      _addMessage(userName, message);
+    }
+  }
 
   // Handlers push
-  void _handlePosted(Map data) { if (currentRoomName == data['roomName']) { _addMessage(data['userName'], data['message']); } }
+  void _handlePosted(Map data) {
+    if (currentRoomName == data['roomName']) {
+      _addMessage(data['userName'], data['message']);
+    }
+  }
 
-  void _handleInvited(Map data) {
+  void _handleInvited(Map data, AppLocalizations l10n) {
     final roomName = data['roomName'];
     _addInvite(roomName);
     final ctx = utils.navigatorKey.currentContext;
@@ -127,34 +146,43 @@ class ChatViewModel extends ChangeNotifier {
         SnackBar(
           backgroundColor: Colors.amber,
           duration: Duration(seconds: 60),
-          content: Text("You've been invited to the room '$roomName' by user '${data['inviterName']}'.\n\nYou can enter the room from the lobby."),
+          content: Text(l10n.new_invite(roomName, data['inviterName'])),
           action: SnackBarAction(label: 'Ok', onPressed: () {}),
         ),
       );
     }
   }
 
-  void _handleJoined(Map data) { if (currentRoomName == data['roomName']) { _setCurrentRoomUserList(data['users']); } }
-  void _handleLeft(Map data) { if (currentRoomName == data['room']['roomName']) { _setCurrentRoomUserList(data['room']['users']); } }
+  void _handleJoined(Map data) {
+    if (currentRoomName == data['roomName']) {
+      _setCurrentRoomUserList(data['users']);
+    }
+  }
 
-  void _handleClosed(Map data) {
+  void _handleLeft(Map data) {
+    if (currentRoomName == data['room']['roomName']) {
+      _setCurrentRoomUserList(data['room']['users']);
+    }
+  }
+
+  void _handleClosed(Map data, AppLocalizations l10n) {
     _setRoomList(data);
     if (data['roomName'] == currentRoomName) {
       _removeInvite(data['roomName']);
       _setCurrentRoomUserList({});
       _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
       _setCurrentRoomEnabled(false);
-      _setGreeting('The room you were in was closed by its creator.');
+      _setGreeting(l10n.closed_room);
       utils.navigatorKey.currentState?.pushNamedAndRemoveUntil('/', ModalRoute.withName('/'));
     }
   }
 
-  void _handleKicked(Map data) {
+  void _handleKicked(Map data, AppLocalizations l10n) {
     _removeInvite(data['roomName']);
     _setCurrentRoomUserList({});
     _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
     _setCurrentRoomEnabled(false);
-    _setGreeting("What did you do?! You got kicked from the room! D'oh!");
+    _setGreeting(l10n.kicked);
     utils.navigatorKey.currentState?.pushNamedAndRemoveUntil('/', ModalRoute.withName('/'));
   }
 }

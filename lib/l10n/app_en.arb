@@ -4,12 +4,19 @@
   "username_used": "Sorry, that username is already taken",
   "empty_password": "Please enter a password",
   "room_name_error": "Please enter a name no more than 14 characters long",
+  "duplicated_room": "Sorry, that room already exists",
+  "full_room": "Sorry, that room is full",
+  "closed_room": "The room you were in was closed by its creator",
   "no_rooms": "There are no rooms yet. Why not add one?",
+  "kicked": "What did you do?! You got kicked from the room! D'oh!",
   "no_invite": "Sorry, you can't enter a private room without an invite",
+  "new_invite": "You've been invited to the room '{roomName}' by user '{inviterName}'.\n\nYou can enter the room from the lobby.",
   "leave_option": "Leave Room",
   "invite_option": "Invite A User",
   "close_option": "Close Room",
   "kick_option": "Kick User",
   "users_header": "  Users In Room",
-  "message_hint": "Enter message"
+  "message_hint": "Enter message",
+  "welcome_new" : "Welcome back, {username}!",
+  "welcome" : "Welcome to the server, {username}!"
 }

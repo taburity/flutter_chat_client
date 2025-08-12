@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -49,7 +50,7 @@ class FlutterChatMain extends StatelessWidget {
     final hasCreds = utils.credentials != null && utils.credentials!.isNotEmpty;
 
     return ChangeNotifierProvider<ChatViewModel>(
-      create: (_) => ChatViewModel(Model()),
+      create: (_) => ChatViewModel(Model(), AppLocalizations.of(context)!),
       child: Builder(
         builder: (context) {
           return MaterialApp(

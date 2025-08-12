@@ -123,17 +123,47 @@ abstract class AppLocalizations {
   /// **'Please enter a name no more than 14 characters long'**
   String get room_name_error;
 
+  /// No description provided for @duplicated_room.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, that room already exists'**
+  String get duplicated_room;
+
+  /// No description provided for @full_room.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, that room is full'**
+  String get full_room;
+
+  /// No description provided for @closed_room.
+  ///
+  /// In en, this message translates to:
+  /// **'The room you were in was closed by its creator'**
+  String get closed_room;
+
   /// No description provided for @no_rooms.
   ///
   /// In en, this message translates to:
   /// **'There are no rooms yet. Why not add one?'**
   String get no_rooms;
 
+  /// No description provided for @kicked.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?! You got kicked from the room! D\'oh!'**
+  String get kicked;
+
   /// No description provided for @no_invite.
   ///
   /// In en, this message translates to:
   /// **'Sorry, you can\'t enter a private room without an invite'**
   String get no_invite;
+
+  /// No description provided for @new_invite.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been invited to the room \'{roomName}\' by user \'{inviterName}\'.\n\nYou can enter the room from the lobby.'**
+  String new_invite(Object inviterName, Object roomName);
 
   /// No description provided for @leave_option.
   ///
@@ -170,6 +200,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter message'**
   String get message_hint;
+
+  /// No description provided for @welcome_new.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {username}!'**
+  String welcome_new(Object username);
+
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the server, {username}!'**
+  String welcome(Object username);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
