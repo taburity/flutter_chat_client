@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
 
-class AppDrawerView extends StatelessWidget {
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ChatViewModel>();

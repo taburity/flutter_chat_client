@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
-import 'app_drawer_view.dart';
+import 'app_drawer.dart';
 
 class CreateRoomView extends StatefulWidget {
+  const CreateRoomView({super.key});
+
   @override
   _CreateRoomViewState createState() => _CreateRoomViewState();
 }
@@ -18,11 +21,11 @@ class _CreateRoomViewState extends State<CreateRoomView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.read<ChatViewModel>();
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('Create Room')),
-      drawer: AppDrawerView(),
+      drawer: AppDrawer(),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
         child: SingleChildScrollView(
@@ -56,7 +59,7 @@ class _CreateRoomViewState extends State<CreateRoomView> {
                 decoration: InputDecoration(hintText: 'Name'),
                 validator: (v) {
                   if (v == null || v.isEmpty || v.length > 14) {
-                    return 'Please enter a name no more than 14 characters long';
+                    return l10n.room_name_error;
                   }
                   return null;
                 },

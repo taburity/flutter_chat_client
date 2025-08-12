@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
-import 'app_drawer_view.dart';
+import 'app_drawer.dart';
 
 class UserListView extends StatelessWidget {
+  const UserListView({super.key});
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ChatViewModel>();
 
     return Scaffold(
       appBar: AppBar(title: Text('User List')),
-      drawer: AppDrawerView(),
+      drawer: AppDrawer(),
       body: GridView.builder(
         itemCount: vm.userList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),

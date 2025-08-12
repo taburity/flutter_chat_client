@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
-import 'app_drawer_view.dart';
+import 'app_drawer.dart';
 
 class RoomView extends StatefulWidget {
+  const RoomView({super.key});
+
   @override
   _RoomViewState createState() => _RoomViewState();
 }
@@ -16,7 +19,7 @@ class _RoomViewState extends State<RoomView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ChatViewModel>();
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -38,16 +41,16 @@ class _RoomViewState extends State<RoomView> {
               }
             },
             itemBuilder: (_) => [
-              PopupMenuItem(value: 'leave', child: Text('Leave Room')),
-              PopupMenuItem(value: 'invite', child: Text('Invite A User')),
+              PopupMenuItem(value: 'leave', child: Text(l10n.leave_option)),
+              PopupMenuItem(value: 'invite', child: Text(l10n.invite_option)),
               PopupMenuDivider(),
-              PopupMenuItem(value: 'close', child: Text('Close Room'), enabled: vm.creatorFunctionsEnabled),
-              PopupMenuItem(value: 'kick', child: Text('Kick User'), enabled: vm.creatorFunctionsEnabled),
+              PopupMenuItem(value: 'close', child: Text(l10n.close_option), enabled: vm.creatorFunctionsEnabled),
+              PopupMenuItem(value: 'kick', child: Text(l10n.kick_option), enabled: vm.creatorFunctionsEnabled),
             ],
           )
         ],
       ),
-      drawer: AppDrawerView(),
+      drawer: AppDrawer(),
       body: Padding(
         padding: EdgeInsets.fromLTRB(6, 14, 6, 6),
         child: Column(
@@ -57,7 +60,7 @@ class _RoomViewState extends State<RoomView> {
               children: [
                 ExpansionPanel(
                   isExpanded: _expanded,
-                  headerBuilder: (_, __) => Text('  Users In Room'),
+                  headerBuilder: (_, __) => Text(l10n.users_header),
                   body: Padding(
                     padding: EdgeInsets.only(bottom: 10),
                     child: Column(
@@ -89,7 +92,7 @@ class _RoomViewState extends State<RoomView> {
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    decoration: InputDecoration.collapsed(hintText: 'Enter message'),
+                    decoration: InputDecoration.collapsed(hintText: l10n.message_hint),
                   ),
                 ),
                 IconButton(

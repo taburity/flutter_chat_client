@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat/l10n/app_localizations.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
 import '../utils.dart' as utils;
 
 class LoginView extends StatefulWidget {
+  const LoginView({super.key});
+
   @override
   State<LoginView> createState() => _LoginViewState();
 }
@@ -20,7 +23,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.read<ChatViewModel>();
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text('Log in')),
       body: Center(
@@ -38,7 +41,7 @@ class _LoginViewState extends State<LoginView> {
                     decoration: InputDecoration(labelText: 'Username'),
                     validator: (v) {
                       if (v == null || v.isEmpty || v.length > 10) {
-                        return 'Please enter a username no more than 10 characters long';
+                        return l10n.username_error;
                       }
                       return null;
                     },
@@ -49,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
                     decoration: InputDecoration(labelText: 'Password'),
                     obscureText: true,
                     validator: (v) => (v == null || v.isEmpty)
-                        ? 'Please enter a password'
+                        ? l10n.empty_password
                         : null,
                   ),
                   SizedBox(height: 24),
@@ -78,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
                             SnackBar(
                               backgroundColor: Colors.red,
                               duration: Duration(seconds: 2),
-                              content: Text('Sorry, that username is already taken'),
+                              content: Text(l10n.username_used),
                             ),
                           );
                         }
