@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 import '../domain/model.dart';
 import '../data/connector.dart';
 import '../utils.dart' as utils;
@@ -26,7 +26,6 @@ class ChatViewModel extends ChangeNotifier {
     _l10n = l10n;
   }
 
-  // Getters para a View
   String get greeting => _model.greeting;
   String get userName => _model.userName;
   String get currentRoomName => _model.currentRoomName;
@@ -38,64 +37,75 @@ class ChatViewModel extends ChangeNotifier {
   bool get creatorFunctionsEnabled => _model.creatorFunctionsEnabled;
   Map get roomInvites => _model.roomInvites;
 
-  // Mutadores + notify
-  void _setGreeting(String v) {
-    _model.greeting = v;
+  void _setGreeting(String inGreeting) {
+    print("## ChatViewModel.setGreeting(): inGreeting = $inGreeting");
+    _model.greeting = inGreeting;
     notifyListeners();
   }
 
-  void _setUserName(String v) {
-    _model.userName = v;
+  void _setUserName(String inUserName) {
+    print("## ChatViewModel.setUserName(): inUserName = $inUserName");
+    _model.userName = inUserName;
     notifyListeners();
   }
 
-  void _setCurrentRoomName(String v) {
-    _model.currentRoomName = v;
+  void _setCurrentRoomName(String inRoomName) {
+    print("## ChatViewModel.setCurrentRoomName(): inRoomName = $inRoomName");
+    _model.currentRoomName = inRoomName;
     notifyListeners();
   }
 
-  void _setCurrentRoomEnabled(bool v) {
-    _model.currentRoomEnabled = v;
+  void _setCurrentRoomEnabled(bool inEnabled) {
+    print("## ChatViewModel.setCurrentRoomEnabled(): inEnabled = $inEnabled");
+    _model.currentRoomEnabled = inEnabled;
     notifyListeners();
   }
 
-  void _setCreatorFunctionsEnabled(bool v) {
-    _model.creatorFunctionsEnabled = v;
+  void _setCreatorFunctionsEnabled(bool inEnabled) {
+    print("## ChatViewModel.setCreatorFunctionsEnabled(): inEnabled = $inEnabled");
+    _model.creatorFunctionsEnabled = inEnabled;
     notifyListeners();
   }
 
   void _clearMessages() {
+    print("## ChatViewModel.clearCurrentRoomMessages()");
     _model.clearCurrentRoomMessages();
     notifyListeners();
   }
 
-  void _setRoomList(Map serverMap) {
-    _model.setRoomListFromServerMap(serverMap);
+  void _setRoomList(Map inRoomList) {
+    print("## ChatViewModel.setRoomList(): inRoomList = $inRoomList");
+    _model.setRoomListFromServerMap(inRoomList);
     notifyListeners();
   }
 
-  void _setUserList(Map serverMap) {
-    _model.setUserListFromServerMap(serverMap);
+  void _setUserList(Map inUserList) {
+    print("## ChatViewModel.setUserList(): inUserList = $inUserList");
+    _model.setUserListFromServerMap(inUserList);
     notifyListeners();
   }
 
-  void _setCurrentRoomUserList(Map serverMap) {
-    _model.setCurrentRoomUserListFromServerMap(serverMap);
+  void _setCurrentRoomUserList(Map inUserList) {
+    print("## ChatViewModel.setCurrentRoomUserList(): inUserList = $inUserList");
+    _model.setCurrentRoomUserListFromServerMap(inUserList);
     notifyListeners();
   }
 
-  void _addMessage(String user, String msg) {
-    _model.addMessage(user, msg);
+  void _addMessage(String inUserName, String inMessage) {
+    print("## ChatViewModel.addMessage(): inUserName = $inUserName, inMessage = $inMessage");
+    _model.addMessage(inUserName, inMessage);
     notifyListeners();
   }
 
-  void _addInvite(String room) {
-    _model.addRoomInvite(room);
+  void _addIRoomnvite(String inRoomName) {
+    print("## ChatViewModel.addRoomInvite(): inRoomName = $inRoomName");
+    _model.addRoomInvite(inRoomName);
     notifyListeners();
   }
 
-  void _removeInvite(String room) {
-    _model.removeRoomInvite(room);
+  void _removeRoomInvite(String inRoomName) {
+    print("## ChatViewModel.removeRoomInvite(): inRoomName = $inRoomName");
+    _model.removeRoomInvite(inRoomName);
     notifyListeners();
   }
 
@@ -114,7 +124,6 @@ class ChatViewModel extends ChangeNotifier {
     return c.future;
   }
 
-  // Salas / Usuários
   Future<void> fetchRooms() async {
     final res = await _connector.listRooms();
     _setRoomList(res);
@@ -160,7 +169,7 @@ class ChatViewModel extends ChangeNotifier {
 
   Future<void> leaveRoom(BuildContext context) async {
     await _connector.leave(userName, currentRoomName);
-    _removeInvite(currentRoomName);
+    _removeRoomInvite(currentRoomName);
     _setCurrentRoomUserList({});
     _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
     _setCurrentRoomEnabled(false);
@@ -198,7 +207,7 @@ class ChatViewModel extends ChangeNotifier {
 
   void _handleInvited(Map data) {
     final roomName = data['roomName'];
-    _addInvite(roomName);
+    _addIRoomnvite(roomName);
     final ctx = utils.navigatorKey.currentContext;
     if (ctx != null) {
       ScaffoldMessenger.of(ctx).showSnackBar(
@@ -227,7 +236,7 @@ class ChatViewModel extends ChangeNotifier {
   void _handleClosed(Map data) {
     _setRoomList(data);
     if (data['roomName'] == currentRoomName) {
-      _removeInvite(data['roomName']);
+      _removeRoomInvite(data['roomName']);
       _setCurrentRoomUserList({});
       _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
       _setCurrentRoomEnabled(false);
@@ -237,7 +246,7 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   void _handleKicked(Map data) {
-    _removeInvite(data['roomName']);
+    _removeRoomInvite(data['roomName']);
     _setCurrentRoomUserList({});
     _setCurrentRoomName(Model.DEFAULT_ROOM_NAME);
     _setCurrentRoomEnabled(false);

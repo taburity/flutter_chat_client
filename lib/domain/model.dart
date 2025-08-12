@@ -7,27 +7,33 @@ class Model {
   List currentRoomUserList = [];
   // Indica se a opção Current Room está habilitada no drawer
   bool currentRoomEnabled = false;
-  // Os elementos são um mapa na forma { userName : "", message : "" }
-  List currentRoomMessages = [];
-  List roomList = [];
-  List userList = [];
   bool creatorFunctionsEnabled = false;
-  Map roomInvites = {};
+
+  // Os elementos são um mapa na forma { userName : "", message : "" }
+  List _currentRoomMessages = [];
+  List _roomList = [];
+  List _userList = [];
+  Map _roomInvites = {};
+
+  List get currentRoomMessages => _currentRoomMessages;
+  List get roomList => _roomList;
+  List get userList => _userList;
+  Map get roomInvites => _roomInvites;
 
   void addMessage(String inUserName, String inMessage) {
     currentRoomMessages.add({"userName": inUserName, "message": inMessage});
   }
 
   void clearCurrentRoomMessages() {
-    currentRoomMessages = [];
+    _currentRoomMessages = [];
   }
 
   void setRoomListFromServerMap(Map inRoomList) {
-    roomList = inRoomList.values.toList();
+    _roomList = inRoomList.values.toList();
   }
 
   void setUserListFromServerMap(Map inUserList) {
-    userList = inUserList.values.toList();
+    _userList = inUserList.values.toList();
   }
 
   void setCurrentRoomUserListFromServerMap(Map inUserList) {
