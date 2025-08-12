@@ -117,7 +117,7 @@ class ChatViewModel extends ChangeNotifier {
       final status = res['status'];
       if (status == 'ok' || status == 'created') {
         _setUserName(username);
-        _setGreeting(status == 'ok' ? l10n.welcome_new(username) : l10n.welcome(username));
+        _setGreeting(status == 'ok' ? l10n.welcome(username) : l10n.welcome_new(username));
       }
       c.complete(status);
     });

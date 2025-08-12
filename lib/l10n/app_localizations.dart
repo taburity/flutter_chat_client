@@ -201,17 +201,17 @@ abstract class AppLocalizations {
   /// **'Enter message'**
   String get message_hint;
 
-  /// No description provided for @welcome_new.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome back, {username}!'**
-  String welcome_new(Object username);
-
   /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to the server, {username}!'**
+  /// **'Welcome back, {username}!'**
   String welcome(Object username);
+
+  /// No description provided for @welcome_new.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the server, {username}!'**
+  String welcome_new(Object username);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

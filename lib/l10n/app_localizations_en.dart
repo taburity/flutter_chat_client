@@ -65,12 +65,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get message_hint => 'Enter message';
 
   @override
-  String welcome_new(Object username) {
+  String welcome(Object username) {
     return 'Welcome back, $username!';
   }
 
   @override
-  String welcome(Object username) {
+  String welcome_new(Object username) {
     return 'Welcome to the server, $username!';
   }
 }

@@ -17,6 +17,6 @@
   "kick_option": "Kick User",
   "users_header": "  Users In Room",
   "message_hint": "Enter message",
-  "welcome_new" : "Welcome back, {username}!",
-  "welcome" : "Welcome to the server, {username}!"
+  "welcome" : "Welcome back, {username}!",
+  "welcome_new" : "Welcome to the server, {username}!"
 }
