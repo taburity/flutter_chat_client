@@ -1,21 +1,19 @@
-// lib/main.dart (Option A, sem MultiProvider)
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'model.dart';
-import 'chat_view_model.dart';
+import 'domain/model.dart';
+import 'ui/chat_view_model.dart';
 import 'utils.dart' as utils;
 
-import 'home_view.dart';
-import 'lobby_view.dart';
-import 'room_view.dart';
-import 'user_list_view.dart';
-import 'create_room_view.dart';
-import 'login_view.dart';
+import 'ui/home_view.dart';
+import 'ui/lobby_view.dart';
+import 'ui/room_view.dart';
+import 'ui/user_list_view.dart';
+import 'ui/create_room_view.dart';
+import 'ui/login_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

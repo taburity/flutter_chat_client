@@ -6,4 +6,3 @@ import 'package:flutter/material.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Directory? docsDir = Directory.systemTemp;
 String? credentials;
-bool loginAlreadyChecked = false;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'chat_view_model.dart';
-import 'utils.dart' as utils;
+import '../utils.dart' as utils;
 
 class LoginView extends StatefulWidget {
   @override

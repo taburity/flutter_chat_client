@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'model.dart';
-import 'connector.dart';
-import 'utils.dart' as utils;
+import '../domain/model.dart';
+import '../data/connector.dart';
+import '../utils.dart' as utils;
 
 class ChatViewModel extends ChangeNotifier {
   final Model _model;

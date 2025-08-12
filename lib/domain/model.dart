@@ -5,9 +5,9 @@ class Model {
   static const String DEFAULT_ROOM_NAME = "Not currently in a room";
   String currentRoomName = DEFAULT_ROOM_NAME;
   List currentRoomUserList = [];
-  // Sinaliza se o usuário está em alguma sala para habilitar opção em drawer
+  // Indica se a opção Current Room está habilitada no drawer
   bool currentRoomEnabled = false;
-  // Os elementos são mapas { userName: "", message: "" }
+  // Os elementos são um mapa na forma { userName : "", message : "" }
   List currentRoomMessages = [];
   List roomList = [];
   List userList = [];

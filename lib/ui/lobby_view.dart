@@ -1,9 +1,7 @@
-// lib/views/lobby_view.dart (Option A)
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../chat_view_model.dart';
-import '../app_drawer_view.dart';
+import 'chat_view_model.dart';
+import 'app_drawer_view.dart';
 
 class LobbyView extends StatelessWidget {
   @override
