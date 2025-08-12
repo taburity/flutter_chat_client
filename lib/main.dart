@@ -68,6 +68,8 @@ class FlutterChatMain extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: AppLocalizations.supportedLocales,
+
+            //injetar dependência que precisa do context já configurado (l10n)
             builder: (context, child) {
               final l10n = AppLocalizations.of(context)!;
               context.read<ChatViewModel>().setLocalizations(l10n);
