@@ -69,43 +69,43 @@ class ChatViewModel extends ChangeNotifier {
 
   void _clearMessages() {
     print("## ChatViewModel.clearCurrentRoomMessages()");
-    _model.clearCurrentRoomMessages();
+    _model.currentRoomMessages = [];
     notifyListeners();
   }
 
   void _setRoomList(Map inRoomList) {
     print("## ChatViewModel.setRoomList(): inRoomList = $inRoomList");
-    _model.setRoomListFromServerMap(inRoomList);
+    _model.roomList = inRoomList.values.toList();
     notifyListeners();
   }
 
   void _setUserList(Map inUserList) {
     print("## ChatViewModel.setUserList(): inUserList = $inUserList");
-    _model.setUserListFromServerMap(inUserList);
+    _model.userList = inUserList.values.toList();
     notifyListeners();
   }
 
   void _setCurrentRoomUserList(Map inUserList) {
     print("## ChatViewModel.setCurrentRoomUserList(): inUserList = $inUserList");
-    _model.setCurrentRoomUserListFromServerMap(inUserList);
+    _model.currentRoomUserList = inUserList.values.toList();
     notifyListeners();
   }
 
   void _addMessage(String inUserName, String inMessage) {
     print("## ChatViewModel.addMessage(): inUserName = $inUserName, inMessage = $inMessage");
-    _model.addMessage(inUserName, inMessage);
+    _model.currentRoomMessages.add({"userName": inUserName, "message": inMessage});
     notifyListeners();
   }
 
   void _addIRoomnvite(String inRoomName) {
     print("## ChatViewModel.addRoomInvite(): inRoomName = $inRoomName");
-    _model.addRoomInvite(inRoomName);
+    _model.roomInvites[inRoomName] = true;
     notifyListeners();
   }
 
   void _removeRoomInvite(String inRoomName) {
     print("## ChatViewModel.removeRoomInvite(): inRoomName = $inRoomName");
-    _model.removeRoomInvite(inRoomName);
+    _model.roomInvites.remove(inRoomName);
     notifyListeners();
   }
 
