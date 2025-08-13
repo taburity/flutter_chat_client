@@ -45,7 +45,7 @@ class LobbyView extends StatelessWidget {
                       ),
                     );
                   } else {
-                    vm.joinRoom(roomName, context, l10n);
+                    vm.joinRoom(roomName, context);
                   }
                 },
               ),

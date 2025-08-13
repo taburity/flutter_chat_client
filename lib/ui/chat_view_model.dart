@@ -117,14 +117,14 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   // Autenticação (pela tela de Login)
-  Future<String> connectAndValidate(String username, String password, AppLocalizations l10n) async {
+  Future<String> connectAndValidate(String username, String password) async {
     final c = Completer<String>();
     _connector.connectToServer(() async {
       final res = await _connector.validate(username, password);
       final status = res['status'];
       if (status == 'ok' || status == 'created') {
         _setUserName(username);
-        _setGreeting(status == 'ok' ? l10n.welcome(username) : l10n.welcome_new(username));
+        _setGreeting(status == 'ok' ? _l10n.welcome(username) : _l10n.welcome_new(username));
       }
       c.complete(status);
     });
@@ -141,8 +141,7 @@ class ChatViewModel extends ChangeNotifier {
     _setUserList(res);
   }
 
-  Future<void> createRoom(String title, String description, int maxPeople, bool isPrivate, BuildContext context,
-      AppLocalizations l10n) async {
+  Future<void> createRoom(String title, String description, int maxPeople, bool isPrivate, BuildContext context) async {
     final res = await _connector.create(title, description, maxPeople, isPrivate, userName);
     if (res['status'] == 'created') {
       _setRoomList(res['rooms']);
@@ -150,12 +149,12 @@ class ChatViewModel extends ChangeNotifier {
     } else {
       final ctx = utils.navigatorKey.currentContext ?? context;
       ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(l10n.duplicated_room)),
+        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(_l10n.duplicated_room)),
       );
     }
   }
 
-  Future<void> joinRoom(String roomName, BuildContext context, AppLocalizations l10n) async {
+  Future<void> joinRoom(String roomName, BuildContext context) async {
     final res = await _connector.join(userName, roomName);
     final status = res['status'];
     if (status == 'joined') {
@@ -169,7 +168,7 @@ class ChatViewModel extends ChangeNotifier {
     } else if (status == 'full') {
       final ctx = utils.navigatorKey.currentContext ?? context;
       ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(l10n.full_room)),
+        SnackBar(backgroundColor: Colors.red, duration: Duration(seconds: 2), content: Text(_l10n.full_room)),
       );
     }
   }

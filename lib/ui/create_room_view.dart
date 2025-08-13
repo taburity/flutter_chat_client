@@ -41,7 +41,7 @@ class _CreateRoomViewState extends State<CreateRoomView> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    vm.createRoom(_title, _description, _maxPeople.truncate(), _private, context, l10n);
+                    vm.createRoom(_title, _description, _maxPeople.truncate(), _private, context);
                   }
                 },
               ),
