@@ -49,7 +49,15 @@ class FlutterChatMain extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasCreds = utils.credentials != null && utils.credentials!.isNotEmpty;
     return ChangeNotifierProvider<ChatViewModel>(
-      create: (_) => ChatViewModel(Model()),
+      create: (_) {
+        final vm = ChatViewModel(Model());
+        if(hasCreds){
+          Future.microtask((){
+            vm.configureKnownUser();
+          });
+        }
+        return vm;
+      },
       child: MaterialApp(
             navigatorKey: utils.navigatorKey,
             initialRoute: hasCreds ? '/' : '/Login',

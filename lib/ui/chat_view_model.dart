@@ -26,6 +26,12 @@ class ChatViewModel extends ChangeNotifier {
     _l10n = l10n;
   }
 
+  void configureKnownUser() {
+    String username = utils.credentials!.split("============")[0];
+    _setUserName(username);
+    _setGreeting(_l10n.welcome(username));
+  }
+
   String get greeting => _model.greeting;
   String get userName => _model.userName;
   String get currentRoomName => _model.currentRoomName;
@@ -44,6 +50,7 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   void _setUserName(String inUserName) {
+    if (_model.userName == inUserName) return; // evita notify redundante
     print("## ChatViewModel.setUserName(): inUserName = $inUserName");
     _model.userName = inUserName;
     notifyListeners();
